@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_po_report_template_user,po_report_template_user,model_po_report_template,,1,1,1,1
+access_product_performance_test_user,product_performance_test_user,model_product_performance_test,,1,1,1,1
+access_po_performance_test_user,po_performance_test_user,model_po_performance_test,,1,1,1,1

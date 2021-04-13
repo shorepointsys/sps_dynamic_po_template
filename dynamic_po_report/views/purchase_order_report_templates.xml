@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="report_fabric_purchaseorder_document">
+        <t t-call="web.external_layout">
+            <t t-set="o" t-value="o.with_context(lang=o.partner_id.lang)"/>
+            <t t-set="company" t-value="o.get_office_details()"/>
+            <t t-set="template" t-value="o.partner_id.po_report_template_id"/>
+            <div class="page report-custom report-po">
+                <div class="text-center" name="company_details">
+                    <h5 class="text-uppercase"><span t-field="o.company_id.name"/></h5>
+                    <div>
+                        <p class="text-uppercase m-0"><span t-field="o.company_id.partner_id.street"/>,<span t-field="o.company_id.partner_id.street2"/></p>
+                        <p class="text-uppercase m-0"><span t-field="o.company_id.partner_id.city"/>-<span t-field="o.company_id.partner_id.zip"/></p>
+                        <p class="m-0"><span t-field="o.company_id.partner_id.website"/>,Email:<span t-field="o.company_id.partner_id.email"/></p>
+                        <p class="m-0">Tel:<span t-field="o.company_id.partner_id.phone"/></p>
+                    </div>
+                </div>
+                <br/>
+                <div class="oe_structure"/>
+
+                <h5 class="text-uppercase text-center" t-if="o.state == 'draft'">Request for Quotation</h5>
+                <h5 class="text-uppercase text-center" t-if="o.state in ['sent', 'to approve']">Purchase Order</h5>
+                <h5 class="text-uppercase text-center" t-if="o.state in ['purchase', 'done']">Purchase Order</h5>
+                <h5 class="text-uppercase text-center" t-if="o.state == 'cancel'">Cancelled Purchase Order</h5>
+                <br/>
+                <div class="row mb32" name="po_details">
+                    <div class="col-6">
+                        <strong>PO.No</strong>:
+                        <span t-field="o.name"/>
+                    </div>
+                    <div class="col-6">
+                        <strong>Buyer</strong>:
+                        <span t-field="o.buyer_id.name"/>
+                    </div>
+                </div>
+                <div class="row mb32">
+                    <div class="col-6">
+                        <strong>PO.Date</strong>:
+                        <span t-field="o.date_order"/>
+                    </div>
+                    <div class="col-6">
+                        <strong>Season</strong>:
+                        <span t-field="o.season"/>
+                    </div>
+                </div>
+                <table class="table table-bordered" name="address">
+                    <tr>
+                        <td rowspan="2" style="width:50%;"> 
+                            <strong>Address of the Vendor</strong><br/>
+                            <div t-if="o.partner_id">
+                                <div t-field="o.partner_id"
+                                    t-options='{"widget": "contact", "fields": ["name", "address"], "no_marker": True,"separator":",",}' name="vendor_address" style="display: inline-block;"/>
+                            </div>
+                        </td>
+                        <td style="width:50%;"> 
+                            <strong>Invoicing Address</strong><br/>
+                            <div t-if="company">
+                                <div t-field="company.partner_id"
+                                    t-options='{"widget": "contact", "fields": ["name", "address"], "no_marker": True,"separator":",",}' name="office_address" style="display: inline-block;"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <strong>Delivery Address</strong><br/>
+                            <div t-if="o.company_id">
+                                <div t-field="o.company_id.partner_id"
+                                    t-options='{"widget": "contact", "fields": ["name", "address"], "no_marker": True,"separator":",",}' name="factory_address" style="display: inline-block;"/>
+                            </div>
+                        </td>
+                    </tr>
+                </table> 
+                <table class="table table-bordered" name="order_lines" style="border: 1px solid black;">
+                    <thead>
+                        <tr>
+                            <th class="text-center" style="width:10%;">Ref Number</th>
+                            <th class="text-center" style="width:35%;">Item Name</th>
+                            <t t-foreach="template.report_attribute_line_ids" t-as="attribute">
+                                <th class="text-center" style="width:10%;">
+                                    <t t-esc="attribute.name"/>
+                                </th>
+                            </t>
+                            <th class="text-center" style="width:10%;">Qty</th>
+                            <th class="text-center" style="width:10%;">Unit</th>
+                            <th class="text-center" style="width:10%;">Price</th>
+                            <th class="text-center" style="width:20%;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <t t-set="current_subtotal" t-value="0"/>
+                        <t t-set="grp_by_tmpl" t-value="o.grp_lines_by_product_tmpl()"/>
+                        <t t-set="tot_qty" t-value="0"/>                        
+                        <t t-foreach="grp_by_tmpl" t-as="grp">
+                            <t t-set="rec_first" t-value="0"/>
+                            <tr t-foreach="grp_by_tmpl[grp]" t-as="line">
+                                <td class="text-center"><t t-esc="line.product_id.default_code"/></td>
+                                <t t-if="rec_first == 0">
+                                    <td t-att-rowspan="len(grp_by_tmpl[grp])" class="text-center align-middle"><t t-esc="grp.name"/></td>
+                                </t>
+                                <t t-foreach="template.report_attribute_line_ids" t-as="attribute">
+                                    <td class="text-center">
+                                        <t t-set="attr_value" t-value="line.product_id.product_template_attribute_value_ids.filtered(lambda l: l.attribute_id.id == attribute.id)"/>
+                                        <t t-if="attr_value">
+                                            <t t-esc="attr_value.name"/>
+                                        </t>
+                                        <t t-if="not attr_value">
+                                            N/A
+                                        </t>                
+                                    </td>
+                                </t>
+                                <td class="text-right">
+                                    <t t-set="tot_qty" t-value="tot_qty + line.product_qty"/>
+                                    <span t-field="line.product_qty"/>
+                                </td>
+                                <td class="text-center">
+                                    <span t-field="line.product_uom.name" groups="uom.group_uom"/>
+                                </td>
+                                <td class="text-right">
+                                    <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                                <td class="text-right">
+                                    <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal"/>
+                                    <span t-field="line.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                                <t t-set="rec_first" t-value="rec_first+1"/>
+                            </tr>
+                        </t>
+                        <t t-set="cols" t-value="2 + len(template.report_attribute_line_ids)"/>
+                        <tr>
+                            <td t-att-colspan="cols" class="text-right"><b>Total</b></td>
+                            <td class="text-right">
+                                <t t-esc="tot_qty"/>
+                            </td>
+                            <td></td>
+                            <td></td>
+                            <td class="text-right"><t t-esc="current_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></td>
+                        </tr>
+                        <t t-set="product_lines" t-value="o.order_line.filtered(lambda l: not l.display_type)"/>
+                        <t t-set="service_lines" t-value="product_lines.filtered(lambda l: l.product_id.product_tmpl_id.type == 'service')"/>
+                        <t t-if="service_lines">
+                            <tr t-foreach="service_lines" t-as="service">
+                                <td t-att-colspan="cols" class="text-right">
+                                    <t t-esc="service.product_id.name"/>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td class="text-right">
+                                    <t t-set="current_subtotal" t-value="current_subtotal + service.price_subtotal"/>
+                                    <t t-esc="service.price_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td t-att-colspan="cols" class="text-right"><b>Grand Total</b></td>
+                                <td class="text-right">
+                                    <t t-esc="tot_qty"/>
+                                </td>
+                                <td></td>
+                                <td></td>
+                                <td class="text-right"><t t-esc="current_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></td>
+                            </tr>
+                        </t>
+
+                        <!--<t t-foreach="o.order_line" t-as="line">
+                            <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
+                            <t t-set="current_subtotal" t-value="current_subtotal + line.price_total" groups="account.group_show_line_subtotals_tax_included"/>
+
+                            <tr t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'font-italic o_line_note' if line.display_type == 'line_note' else ''">
+                                <t t-if="not line.display_type">
+                                    <td class="text-center">
+                                        <span t-field="line.product_id.default_code"/>
+                                    </td>
+                                    <td id="product" class="text-center">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                    <t t-foreach="template.report_attribute_line_ids" t-as="attribute">
+                                        <td class="text-center">
+                                        </td>
+                                    </t>
+                                    <td class="text-right">
+                                        <span t-field="line.product_qty"/>
+                                    </td>
+                                    <td class="text-center">
+                                        <span t-field="line.product_uom.name" groups="uom.group_uom"/>
+                                    </td>
+                                    <td class="text-right">
+                                        <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
+                                    </td>
+                                </t>
+                                <t t-if="line.display_type == 'line_section'">
+                                    <td colspan="99" id="section">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                    <t t-set="current_section" t-value="line"/>
+                                    <t t-set="current_subtotal" t-value="0"/>
+                                </t>
+                                <t t-if="line.display_type == 'line_note'">
+                                    <td colspan="99" id="note">
+                                        <span t-field="line.name"/>
+                                    </td>
+                                </t>
+                            </tr>
+                            <t t-if="current_section and (line_last or o.order_line[line_index+1].display_type == 'line_section')">
+                                <tr class="is-subtotal text-right">
+                                    <td colspan="99" id="subtotal">
+                                        <strong class="mr16">Subtotal</strong>
+                                        <span
+                                            t-esc="current_subtotal"
+                                            t-options='{"widget": "monetary", "display_currency": o.currency_id}'
+                                        />
+                                    </td>
+                                </tr>
+                            </t>
+                        </t>-->
+                    </tbody>
+                </table>
+                <div class="other_details">
+                    <div t-if="o.inspection_html != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'" class="oe_no_empty"><strong class="text-uppercase">Inspection</strong>: <div style="padding-left:75px;" t-raw="o.inspection_html"/></div>
+                    <!--<div t-if="o.instruction_html != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'" class="oe_no_empty"><strong>Instruction</strong>: <div style="padding-left:20px;" t-raw="o.render_html_content(o.instruction_html)"/></div>-->
+                    <div t-if="o.instruction_html != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'" class="oe_no_empty"><strong class="text-uppercase">Instruction</strong>: <div style="padding-left:75px;" t-raw="o.instruction_html"/></div>
+                    <div><strong class="text-uppercase">Delivery</strong>: <div style="padding-left:75px;" t-field="o.date_planned"/></div>
+                    <div><strong class="text-uppercase">Payment Terms</strong>: <div style="padding-left:75px;" t-field="o.payment_term_id"/></div>
+                    <div t-if="o.special_instruction_html != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'" class="display:oe_no_empty"><strong class="text-uppercase">Special Instructions</strong>: <div style="padding-left:75px;" t-raw="o.special_instruction_html"/></div>
+                    <div t-if="o.other_details_html != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'" class="oe_no_empty"><strong class="text-uppercase">Any Other Details</strong>: <div style="padding-left:75px;" t-raw="o.other_details_html"/></div>
+                </div>
+                <p t-field="o.notes"/>
+                <div class="oe_structure"/>
+                <div class="footer">
+                    <t t-set="first_level_approval" t-value="o.approver_ids.sorted(key=lambda l: (-l.priority), reverse=True).filtered(lambda l: l.is_representative)"/>
+                    <t t-set="final_level_approval" t-value="o.approver_ids.sorted(key=lambda l: (l.priority), reverse=True).filtered(lambda l: l.is_representative)"/>
+
+                    <table style="width:100%;">
+                            <tr class="text-center">
+                                <td width="33.33%">
+                                    <span t-field="o.user_id.name"/><br/>
+                                    <span t-field="o.create_date"/><br/>
+                                    <strong>Prepared By,</strong><br/><br/>
+                                </td>
+                                <td width="33.33%">
+                                    <span t-if="first_level_approval" t-field="first_level_approval[0].user_id.name"/><br/>
+                                    <span t-if="first_level_approval" t-field="first_level_approval[0].approved_date"/><br/>
+                                    <strong>Checked By,</strong><br/><br/>
+                                </td>
+                                <td width="33.33%">
+                                    <span t-if="final_level_approval" t-field="final_level_approval[0].user_id.name"/><br/>
+                                    <span t-if="final_level_approval" t-field="final_level_approval[0].approved_date"/><br/>
+                                    <strong>Approved By,</strong><br/><br/>
+                                </td>
+                            </tr>
+                        
+                    </table>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <template id="purchase.report_purchaseorder">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <!--<t t-call="dynamic_po_report.report_fabric_purchaseorder_document" t-lang="o.partner_id.lang"/>-->
+                <t t-if="o.partner_id.po_report_template_id">
+                    <t t-call="{{o.partner_id.po_report_template_id.layout_id.key}}" t-lang="o.partner_id.lang"/>
+                </t>
+                <t t-if="not o.partner_id.po_report_template_id">
+                    <t t-call="purchase.report_purchaseorder_document" t-lang="o.partner_id.lang"/>
+                </t>
+            </t>
+        </t>
+    </template>
+</odoo>
