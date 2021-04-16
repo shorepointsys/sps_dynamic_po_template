@@ -13,12 +13,6 @@
             </xpath>
             <xpath expr="//notebook" position="inside">
                 <page name="po_performance" string="Performance Standards">
-                    <field name="performance_ids" string="Tests">
-                        <tree editable="bottom" string="Tests">
-                           <field name="name"/>
-                           <field name="requirements"/>
-                        </tree>
-                    </field>
                     <group colspan="2" col="2">
                         <separator string="Inspection Notes" colspan="4"/>
                         <field name="inspection_html" colspan="3" nolabel="1"/>
