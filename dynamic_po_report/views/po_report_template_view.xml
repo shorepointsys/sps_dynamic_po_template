@@ -17,6 +17,24 @@
                         <page name="report_attributes" string="Report Variants">
                             <field name="report_attribute_line_ids"/>
                         </page>
+                        <page name="performance" string="Performance Standards">
+                            <group colspan="2" col="2">
+                                <separator string="Inspection Notes" colspan="4"/>
+                                <field name="inspection_html" colspan="3" nolabel="1"/>
+                            </group>
+                            <group colspan="2" col="2">
+                                <separator string="Instructions" colspan="4"/>
+                                <field name="instruction_html" colspan="3" nolabel="1"/>
+                            </group>
+                            <group colspan="2" col="2">
+                                <separator string="Special Instructions" colspan="4"/>
+                                <field name="special_instruction_html" colspan="3" nolabel="1"/>
+                            </group>
+                            <group colspan="2" col="2">
+                                <separator string="Other Details" colspan="4"/>
+                                <field name="other_details_html" colspan="3" nolabel="1"/>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
             </form>
