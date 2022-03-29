@@ -10,7 +10,7 @@
     'website': "http://www.shorepointsys.com",
     'category': 'Uncategorized',
     'version': '0.1',
-    'depends': ['purchase'],
+    'depends': ['purchase','documents_sales_from_techpack'],
     'data': [
         'security/ir.model.access.csv',
         'views/res_partner_view.xml',
