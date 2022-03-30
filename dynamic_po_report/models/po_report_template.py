@@ -17,7 +17,7 @@ class POReportTemplate(models.Model):
     report_attribute_line_ids = fields.Many2many('product.attribute', string='Report Product Attributes', copy=True)
     layout_id = fields.Many2one('ir.ui.view', string='Report Layout')
     inspection_html = fields.Html('Inspection', translate=True, sanitize=False)
-    special_instruction_html = fields.Html('Special Instruction', translate=True, sanitize=False)
+    special_instruction_html = fields.Html('Special Instructions', translate=True, sanitize=False)
     other_details_html = fields.Html('Other Details', translate=True, sanitize=False)
     instruction_html = fields.Html('Instruction', translate=True, sanitize=False)
     
