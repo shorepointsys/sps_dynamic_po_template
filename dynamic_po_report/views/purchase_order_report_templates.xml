@@ -214,7 +214,8 @@
                         </t>-->
                     </tbody>
                 </table>
-                <div class="other_details">
+        <div class="row justify-content-between">        
+                <div class="other_details col-9">
                     <div t-if="o.inspection_html != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'" class="oe_no_empty"><strong class="text-uppercase">Inspection</strong>: <div style="padding-left:75px;" t-raw="o.inspection_html"/></div>
                     <!--<div t-if="o.instruction_html != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'" class="oe_no_empty"><strong>Instruction</strong>: <div style="padding-left:20px;" t-raw="o.render_html_content(o.instruction_html)"/></div>-->
                     <div t-if="o.instruction_html != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'" class="oe_no_empty"><strong class="text-uppercase">Instruction</strong>: <div style="padding-left:75px;" t-raw="o.instruction_html"/></div>
@@ -223,6 +224,22 @@
                     <div t-if="o.special_instruction_html != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'" class="display:oe_no_empty"><strong class="text-uppercase">Special Instructions</strong>: <div style="padding-left:75px;" t-raw="o.special_instruction_html"/></div>
                     <div t-if="o.other_details_html != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'" class="oe_no_empty"><strong class="text-uppercase">Any Other Details</strong>: <div style="padding-left:75px;" t-raw="o.other_details_html"/></div>
                 </div>
+                <div class="signature col-3">
+            <t t-if="o.approver_ids and o.state == 'purchase'">
+                <t t-foreach="o.approver_ids" t-as="approve">
+                    <div class="row">
+                        <div class="col-12">
+                            <img t-attf-src="/web/image/po.approver/#{approve.id}/signature" class="flex-shrink-0 o_image_64_contain" style="height:100px;width:200px;"/>
+                            <div><b>Signature</b></div>
+                            Approved by <span t-field="approve.user_id.partner_id"/><br/>
+                            Approved on <span t-field="approve.approved_date" widget="date"/><br/>
+                        </div>
+                    </div>
+
+                </t>
+            </t>
+        </div>
+            </div>
                 <p t-field="o.notes"/>
                 <div class="oe_structure"/>
                 <div class="footer">
