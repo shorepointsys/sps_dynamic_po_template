@@ -36,8 +36,6 @@ class PurchaseOrder(models.Model):
                     if len(sub_lst) == 3:
                         final_list.append(sub_lst)
                         sub_lst = []
-        for line in final_list:
-            for sub_line in line:
         return final_list
 
     @api.onchange('partner_id')
