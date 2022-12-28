@@ -160,58 +160,6 @@
                                 <td class="text-right"><t t-esc="current_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></td>
                             </tr>
                         </t>
-
-                        <!--<t t-foreach="o.order_line" t-as="line">
-                            <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
-                            <t t-set="current_subtotal" t-value="current_subtotal + line.price_total" groups="account.group_show_line_subtotals_tax_included"/>
-
-                            <tr t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'font-italic o_line_note' if line.display_type == 'line_note' else ''">
-                                <t t-if="not line.display_type">
-                                    <td class="text-center">
-                                        <span t-field="line.product_id.default_code"/>
-                                    </td>
-                                    <td id="product" class="text-center">
-                                        <span t-field="line.name"/>
-                                    </td>
-                                    <t t-foreach="template.report_attribute_line_ids" t-as="attribute">
-                                        <td class="text-center">
-                                        </td>
-                                    </t>
-                                    <td class="text-right">
-                                        <span t-field="line.product_qty"/>
-                                    </td>
-                                    <td class="text-center">
-                                        <span t-field="line.product_uom.name" groups="uom.group_uom"/>
-                                    </td>
-                                    <td class="text-right">
-                                        <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                    </td>
-                                </t>
-                                <t t-if="line.display_type == 'line_section'">
-                                    <td colspan="99" id="section">
-                                        <span t-field="line.name"/>
-                                    </td>
-                                    <t t-set="current_section" t-value="line"/>
-                                    <t t-set="current_subtotal" t-value="0"/>
-                                </t>
-                                <t t-if="line.display_type == 'line_note'">
-                                    <td colspan="99" id="note">
-                                        <span t-field="line.name"/>
-                                    </td>
-                                </t>
-                            </tr>
-                            <t t-if="current_section and (line_last or o.order_line[line_index+1].display_type == 'line_section')">
-                                <tr class="is-subtotal text-right">
-                                    <td colspan="99" id="subtotal">
-                                        <strong class="mr16">Subtotal</strong>
-                                        <span
-                                            t-esc="current_subtotal"
-                                            t-options='{"widget": "monetary", "display_currency": o.currency_id}'
-                                        />
-                                    </td>
-                                </tr>
-                            </t>
-                        </t>-->
                     </tbody>
                 </table>
                 <div class="other_details">
@@ -224,6 +172,21 @@
                     <div t-if="o.other_details_html != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'" class="oe_no_empty"><strong class="text-uppercase">Any Other Details</strong>: <div style="padding-left:75px;" t-raw="o.other_details_html"/></div>
                 </div>
                 <p t-field="o.notes"/>
+                <t t-if="len(o.approver_ids) > 1">
+                    <t t-set="app_lines" t-value="o._get_approver_lines()"/>
+                    <t t-foreach="app_lines" t-as="line">
+                        <div class="row">
+                            <t t-foreach="line" t-as="sub_appr_line">
+                                <div class="col-4">
+                                    <img t-attf-src="/web/image/po.approver/#{sub_appr_line.id}/signature" class="flex-shrink-0 o_image_64_contain" style="height:80px;width:180px;"/><br/>
+                                    <span t-field="sub_appr_line.user_id.name"/><br/>
+                                    <span  t-field="sub_appr_line.approved_date"/><br/>
+                                    <strong>Approved By,</strong><br/><br/>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                </t>
                 <div class="oe_structure"/>
                 <div class="footer">
                     <t t-set="first_level_approval" t-value="o.approver_ids.sorted(key=lambda l: (-l.priority), reverse=True).filtered(lambda l: l.is_representative)"/>
@@ -238,7 +201,7 @@
 
                             </td>
                             <td width="33.33%">
-                                <img t-attf-src="/web/image/po.approver/#{final_level_approval[0].id}/signature" class="flex-shrink-0 o_image_64_contain" style="height:80px;width:180px;"/><br/>
+                                <img t-if="len(o.approver_ids) == 1" t-attf-src="/web/image/po.approver/#{final_level_approval[0].id}/signature" class="flex-shrink-0 o_image_64_contain" style="height:80px;width:180px;"/><br/>
                             </td>
 
                         </tr>
@@ -254,8 +217,8 @@
                                 <strong>Checked By,</strong><br/><br/>
                             </td>
                             <td width="33.33%">
-                                <span t-if="final_level_approval" t-field="final_level_approval[0].user_id.name"/><br/>
-                                <span t-if="final_level_approval" t-field="final_level_approval[0].approved_date"/><br/>
+                                <span t-if="final_level_approval and len(o.approver_ids) == 1" t-field="final_level_approval[0].user_id.name"/><br/>
+                                <span t-if="final_level_approval and len(o.approver_ids) == 1" t-field="final_level_approval[0].approved_date"/><br/>
                                 <strong>Approved By,</strong><br/><br/>
                             </td>
                         </tr>
