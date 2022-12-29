@@ -22,6 +22,22 @@ class PurchaseOrder(models.Model):
     buyer_id = fields.Many2one('res.partner', string='Buyer')
 
 
+
+    def _get_approver_lines(self):
+        final_list = []
+        if self.approver_ids:
+            sub_lst = []
+            for approver in self.approver_ids:
+                if len(sub_lst) == 3:
+                    final_list.append(sub_lst)
+                    sub_lst = []
+                else:
+                    sub_lst.append(approver)
+                    if len(sub_lst) == 3:
+                        final_list.append(sub_lst)
+                        sub_lst = []
+        return final_list
+
     @api.onchange('partner_id')
     def onchange_partner_id_standards(self):
         if not self.partner_id:
