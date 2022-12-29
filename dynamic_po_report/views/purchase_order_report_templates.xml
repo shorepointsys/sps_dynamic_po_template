@@ -45,18 +45,18 @@
                 </div>
                 <table class="table table-bordered" name="address">
                     <tr>
-                        <td rowspan="2" style="width:50%;"> 
+                        <td rowspan="2" style="width:50%;">
                             <strong>Address of the Vendor</strong><br/>
                             <div t-if="o.partner_id">
                                 <div t-field="o.partner_id"
-                                    t-options='{"widget": "contact", "fields": ["name", "address"], "no_marker": True,"separator":",",}' name="vendor_address" style="display: inline-block;"/>
+                                     t-options='{"widget": "contact", "fields": ["name", "address"], "no_marker": True,"separator":",",}' name="vendor_address" style="display: inline-block;"/>
                             </div>
                         </td>
-                        <td style="width:50%;"> 
+                        <td style="width:50%;">
                             <strong>Invoicing Address</strong><br/>
                             <div t-if="company">
                                 <div t-field="company.partner_id"
-                                    t-options='{"widget": "contact", "fields": ["name", "address"], "no_marker": True,"separator":",",}' name="office_address" style="display: inline-block;"/>
+                                     t-options='{"widget": "contact", "fields": ["name", "address"], "no_marker": True,"separator":",",}' name="office_address" style="display: inline-block;"/>
                             </div>
                         </td>
                     </tr>
@@ -65,11 +65,11 @@
                             <strong>Delivery Address</strong><br/>
                             <div t-if="o.company_id">
                                 <div t-field="o.company_id.partner_id"
-                                    t-options='{"widget": "contact", "fields": ["name", "address"], "no_marker": True,"separator":",",}' name="factory_address" style="display: inline-block;"/>
+                                     t-options='{"widget": "contact", "fields": ["name", "address"], "no_marker": True,"separator":",",}' name="factory_address" style="display: inline-block;"/>
                             </div>
                         </td>
                     </tr>
-                </table> 
+                </table>
                 <table class="table table-bordered" name="order_lines" style="border: 1px solid black;">
                     <thead>
                         <tr>
@@ -89,7 +89,7 @@
                     <tbody>
                         <t t-set="current_subtotal" t-value="0"/>
                         <t t-set="grp_by_tmpl" t-value="o.grp_lines_by_product_tmpl()"/>
-                        <t t-set="tot_qty" t-value="0"/>                        
+                        <t t-set="tot_qty" t-value="0"/>
                         <t t-foreach="grp_by_tmpl" t-as="grp">
                             <t t-set="rec_first" t-value="0"/>
                             <tr t-foreach="grp_by_tmpl[grp]" t-as="line">
@@ -105,7 +105,7 @@
                                         </t>
                                         <t t-if="not attr_value">
                                             N/A
-                                        </t>                
+                                        </t>
                                     </td>
                                 </t>
                                 <td class="text-right">
@@ -160,62 +160,9 @@
                                 <td class="text-right"><t t-esc="current_subtotal" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/></td>
                             </tr>
                         </t>
-
-                        <!--<t t-foreach="o.order_line" t-as="line">
-                            <t t-set="current_subtotal" t-value="current_subtotal + line.price_subtotal" groups="account.group_show_line_subtotals_tax_excluded"/>
-                            <t t-set="current_subtotal" t-value="current_subtotal + line.price_total" groups="account.group_show_line_subtotals_tax_included"/>
-
-                            <tr t-att-class="'bg-200 font-weight-bold o_line_section' if line.display_type == 'line_section' else 'font-italic o_line_note' if line.display_type == 'line_note' else ''">
-                                <t t-if="not line.display_type">
-                                    <td class="text-center">
-                                        <span t-field="line.product_id.default_code"/>
-                                    </td>
-                                    <td id="product" class="text-center">
-                                        <span t-field="line.name"/>
-                                    </td>
-                                    <t t-foreach="template.report_attribute_line_ids" t-as="attribute">
-                                        <td class="text-center">
-                                        </td>
-                                    </t>
-                                    <td class="text-right">
-                                        <span t-field="line.product_qty"/>
-                                    </td>
-                                    <td class="text-center">
-                                        <span t-field="line.product_uom.name" groups="uom.group_uom"/>
-                                    </td>
-                                    <td class="text-right">
-                                        <span t-field="line.price_unit" t-options='{"widget": "monetary", "display_currency": o.currency_id}'/>
-                                    </td>
-                                </t>
-                                <t t-if="line.display_type == 'line_section'">
-                                    <td colspan="99" id="section">
-                                        <span t-field="line.name"/>
-                                    </td>
-                                    <t t-set="current_section" t-value="line"/>
-                                    <t t-set="current_subtotal" t-value="0"/>
-                                </t>
-                                <t t-if="line.display_type == 'line_note'">
-                                    <td colspan="99" id="note">
-                                        <span t-field="line.name"/>
-                                    </td>
-                                </t>
-                            </tr>
-                            <t t-if="current_section and (line_last or o.order_line[line_index+1].display_type == 'line_section')">
-                                <tr class="is-subtotal text-right">
-                                    <td colspan="99" id="subtotal">
-                                        <strong class="mr16">Subtotal</strong>
-                                        <span
-                                            t-esc="current_subtotal"
-                                            t-options='{"widget": "monetary", "display_currency": o.currency_id}'
-                                        />
-                                    </td>
-                                </tr>
-                            </t>
-                        </t>-->
                     </tbody>
                 </table>
-        <div class="row justify-content-between">        
-                <div class="other_details col-9">
+                <div class="other_details">
                     <div t-if="o.inspection_html != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'" class="oe_no_empty"><strong class="text-uppercase">Inspection</strong>: <div style="padding-left:75px;" t-raw="o.inspection_html"/></div>
                     <!--<div t-if="o.instruction_html != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'" class="oe_no_empty"><strong>Instruction</strong>: <div style="padding-left:20px;" t-raw="o.render_html_content(o.instruction_html)"/></div>-->
                     <div t-if="o.instruction_html != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'" class="oe_no_empty"><strong class="text-uppercase">Instruction</strong>: <div style="padding-left:75px;" t-raw="o.instruction_html"/></div>
@@ -224,47 +171,58 @@
                     <div t-if="o.special_instruction_html != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'" class="display:oe_no_empty"><strong class="text-uppercase">Special Instructions</strong>: <div style="padding-left:75px;" t-raw="o.special_instruction_html"/></div>
                     <div t-if="o.other_details_html != '&lt;p&gt;&lt;br&gt;&lt;/p&gt;'" class="oe_no_empty"><strong class="text-uppercase">Any Other Details</strong>: <div style="padding-left:75px;" t-raw="o.other_details_html"/></div>
                 </div>
-                <div class="signature col-3">
-            <t t-if="o.approver_ids and o.state == 'purchase'">
-                <t t-foreach="o.approver_ids" t-as="approve">
-                    <div class="row">
-                        <div class="col-12">
-                            <img t-attf-src="/web/image/po.approver/#{approve.id}/signature" class="flex-shrink-0 o_image_64_contain" style="height:100px;width:200px;"/>
-                            <div><b>Signature</b></div>
-                            Approved by <span t-field="approve.user_id.partner_id"/><br/>
-                            Approved on <span t-field="approve.approved_date" widget="date"/><br/>
-                        </div>
-                    </div>
-
-                </t>
-            </t>
-        </div>
-            </div>
                 <p t-field="o.notes"/>
+                <t t-if="len(o.approver_ids) > 1">
+                    <t t-set="app_lines" t-value="o._get_approver_lines()"/>
+                    <t t-foreach="app_lines" t-as="line">
+                        <div class="row">
+                            <t t-foreach="line" t-as="sub_appr_line">
+                                <div class="col-4">
+                                    <img t-attf-src="/web/image/po.approver/#{sub_appr_line.id}/signature" class="flex-shrink-0 o_image_64_contain" style="height:80px;width:180px;"/><br/>
+                                    <span t-field="sub_appr_line.user_id.name"/><br/>
+                                    <span  t-field="sub_appr_line.approved_date"/><br/>
+                                    <strong>Approved By,</strong><br/><br/>
+                                </div>
+                            </t>
+                        </div>
+                    </t>
+                </t>
                 <div class="oe_structure"/>
                 <div class="footer">
                     <t t-set="first_level_approval" t-value="o.approver_ids.sorted(key=lambda l: (-l.priority), reverse=True).filtered(lambda l: l.is_representative)"/>
                     <t t-set="final_level_approval" t-value="o.approver_ids.sorted(key=lambda l: (l.priority), reverse=True).filtered(lambda l: l.is_representative)"/>
 
                     <table style="width:100%;">
-                            <tr class="text-center">
-                                <td width="33.33%">
-                                    <span t-field="o.user_id.name"/><br/>
-                                    <span t-field="o.create_date"/><br/>
-                                    <strong>Prepared By,</strong><br/><br/>
-                                </td>
-                                <td width="33.33%">
-                                    <span t-if="first_level_approval" t-field="first_level_approval[0].user_id.name"/><br/>
-                                    <span t-if="first_level_approval" t-field="first_level_approval[0].approved_date"/><br/>
-                                    <strong>Checked By,</strong><br/><br/>
-                                </td>
-                                <td width="33.33%">
-                                    <span t-if="final_level_approval" t-field="final_level_approval[0].user_id.name"/><br/>
-                                    <span t-if="final_level_approval" t-field="final_level_approval[0].approved_date"/><br/>
-                                    <strong>Approved By,</strong><br/><br/>
-                                </td>
-                            </tr>
-                        
+                        <tr class="text-center">
+                            <td width="33.33%">
+
+                            </td>
+                            <td width="33.33%">
+
+                            </td>
+                            <td width="33.33%">
+                                <img t-if="len(o.approver_ids) == 1" t-attf-src="/web/image/po.approver/#{final_level_approval[0].id}/signature" class="flex-shrink-0 o_image_64_contain" style="height:80px;width:180px;"/><br/>
+                            </td>
+
+                        </tr>
+                        <tr class="text-center">
+                            <td width="33.33%">
+                                <span t-field="o.user_id.name"/><br/>
+                                <span t-field="o.create_date"/><br/>
+                                <strong>Prepared By,</strong><br/><br/>
+                            </td>
+                            <td width="33.33%">
+                                <span t-if="first_level_approval" t-field="first_level_approval[0].user_id.name"/><br/>
+                                <span t-if="first_level_approval" t-field="first_level_approval[0].approved_date"/><br/>
+                                <strong>Checked By,</strong><br/><br/>
+                            </td>
+                            <td width="33.33%">
+                                <span t-if="final_level_approval and len(o.approver_ids) == 1" t-field="final_level_approval[0].user_id.name"/><br/>
+                                <span t-if="final_level_approval and len(o.approver_ids) == 1" t-field="final_level_approval[0].approved_date"/><br/>
+                                <strong>Approved By,</strong><br/><br/>
+                            </td>
+                        </tr>
+
                     </table>
                 </div>
             </div>
